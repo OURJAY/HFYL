@@ -1,7 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
 var HtmlwebpackPlugin = require('html-webpack-plugin');
-// var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 //定义了一些文件夹的路径
 var ROOT_PATH = path.resolve(__dirname);
@@ -14,6 +13,7 @@ module.exports = {
     entry: {
         vendors: ['jquery'],
         login: './src/components/login/login.js',
+        store: './src/components/store/store.js'
     },
     output: {
         path: BUILD_PATH,
@@ -25,26 +25,35 @@ module.exports = {
         }),
         new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js'),
         new webpack.ProvidePlugin({
-            $: "jquery"
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery"
         }),
         new HtmlwebpackPlugin({
-            title: '玫阅-登录.注册',
+            title: 'OURJAY-登录.注册',
             template: './src/templetes/login/login.html',
             filename: 'login.html',
-            chunks: ['vendors', 'common', 'login'],
+            chunks: ['vendors', 'login'],
             inject: 'body'
         }),
+        new HtmlwebpackPlugin({
+            title: 'OURJAY-商城',
+            template: './src/templetes/store/store.html',
+            filename: 'store.html',
+            chunks: ['vendors', 'store'],
+            inject: 'body'
+        })
+
     ],
     devServer: {
         historyApiFallback: true,
         progress: true,
-        hot: true,
-        inline: true,
-        port: 8081,
+        // hot: true,
+        // inline: true,
+        port: 8088,
         proxy: {
             '/api/*': {
-                target: 'http://122.144.131.98/',
-                // target:' http://122.144.131.98:8090/mockjs/9',
+                target: 'http://localhost:8088',
                 secure: false
             }
         },
@@ -61,16 +70,17 @@ module.exports = {
             //     loaders: ['style', 'css'],
             //     include: SRC_PATH
             // },
+            {
+                test: /\.scss$/,
+                loaders: ['style', 'css?sourceMap', 'sass?sourceMap'],
+                include: SRC_PATH
+            },
             // {
-            //     test: /\.scss$/,
-            //     loaders: ['style', 'css?sourceMap','sass?sourceMap'],
+            //     test: /\.scss?$/,
+            //     loader: 'style-loader!css-loader!sass-loader',
             //     include: SRC_PATH
             // },
             {
-                test: /\.scss?$/,
-                loader: 'style-loader!css-loader!sass-loader',
-                include: SRC_PATH
-            }, {
                 test: /\.(png|jpg)$/,
                 loader: 'url?limit=40000'
             }, {
